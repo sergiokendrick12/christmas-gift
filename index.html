@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Gift Landing Page</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Lucide Icons as Components
+        const Gift = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                <rect x="2" y="7" width="20" height="5"></rect>
+                <line x1="12" y1="22" x2="12" y2="7"></line>
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </svg>
+        );
+
+        const Star = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+        );
+
+        const Sparkles = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+                <path d="M5 3v4"></path>
+                <path d="M19 17v4"></path>
+                <path d="M3 5h4"></path>
+                <path d="M17 19h4"></path>
+            </svg>
+        );
+
+        const Heart = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+        );
+
+        const ChevronDown = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        );
+
+        // Animated Counter Component
+        function AnimatedCounter({ end, duration = 2000, suffix = "" }) {
+            const [count, setCount] = useState(0);
+            const [isVisible, setIsVisible] = useState(false);
+            const counterRef = useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting && !isVisible) {
+                            setIsVisible(true);
+                        }
+                    },
+                    { threshold: 0.3 }
+                );
+
+                if (counterRef.current) {
+                    observer.observe(counterRef.current);
+                }
+
+                return () => observer.disconnect();
+            }, [isVisible]);
+
+            useEffect(() => {
+                if (!isVisible) return;
+
+                let startTime;
+                let animationFrame;
+
+                const animate = (currentTime) => {
+                    if (!startTime) startTime = currentTime;
+                    const progress = Math.min((currentTime - startTime) / duration, 1);
+
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    setCount(Math.floor(easeOutQuart * end));
+
+                    if (progress < 1) {
+                        animationFrame = requestAnimationFrame(animate);
+                    }
+                };
+
+                animationFrame = requestAnimationFrame(animate);
+                return () => cancelAnimationFrame(animationFrame);
+            }, [isVisible, end, duration]);
+
+            return (
+                <div ref={counterRef} className="text-4xl md:text-5xl font-bold mb-2">
+                    {count}{suffix}
+                </div>
+            );
+        }
+
+        function ChristmasLanding() {
+            const [snowflakes, setSnowflakes] = useState([]);
+
+            useEffect(() => {
+                const flakes = Array.from({ length: 50 }, (_, i) => ({
+                    id: i,
+                    left: Math.random() * 100,
+                    animationDuration: 5 + Math.random() * 10,
+                    animationDelay: Math.random() * 5,
+                    size: 2 + Math.random() * 4
+                }));
+                setSnowflakes(flakes);
+            }, []);
+
+            return (
+                <div className="min-h-screen bg-gradient-to-b from-red-900 via-red-800 to-green-900 text-white overflow-hidden relative">
+                    {/* Snowfall Effect */}
+                    {snowflakes.map(flake => (
+                        <div
+                            key={flake.id}
+                            className="absolute top-0 text-white opacity-70 pointer-events-none"
+                            style={{
+                                left: `${flake.left}%`,
+                                animation: `fall ${flake.animationDuration}s linear infinite`,
+                                animationDelay: `${flake.animationDelay}s`,
+                                fontSize: `${flake.size}px`
+                            }}
+                        >
+                            ❄
+                        </div>
+                    ))}
+
+                    <style>{`
+                        @keyframes fall {
+                            0% { transform: translateY(-10vh) rotate(0deg); }
+                            100% { transform: translateY(110vh) rotate(360deg); }
+                        }
+                        @keyframes float {
+                            0%, 100% { transform: translateY(0px); }
+                            50% { transform: translateY(-20px); }
+                        }
+                        @keyframes pulse {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                        }
+                    `}</style>
+
+                    {/* Navigation */}
+                    <nav className="relative z-10 p-6 flex justify-between items-center max-w-7xl mx-auto">
+                        <div className="flex items-center gap-2 text-2xl font-bold">
+                            <Gift size={28} className="text-yellow-300" />
+                            <span>Holiday Gifts</span>
+                        </div>
+                        <div className="hidden md:flex gap-8">
+                            <a href="#gifts" className="hover:text-yellow-300 transition-colors">Gifts</a>
+                            <a href="#about" className="hover:text-yellow-300 transition-colors">About</a>
+                            <a href="#contact" className="hover:text-yellow-300 transition-colors">Contact</a>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section className="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center">
+                        <div className="inline-flex items-center gap-2 bg-yellow-400 text-red-900 px-4 py-2 rounded-full text-sm font-semibold mb-8">
+                            <Sparkles size={16} />
+                            Limited Time Holiday Offers
+                        </div>
+
+                        <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                            Make This Christmas
+                            <br />
+                            <span className="text-yellow-300" style={{ animation: 'pulse 2s ease-in-out infinite' }}>
+                                Magical ✨
+                            </span>
+                        </h1>
+
+                        <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-red-100">
+                            Discover the perfect gifts for everyone on your list. Wrapped with love, delivered with joy.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                            <button className="bg-yellow-400 text-red-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-lg">
+                                Shop Now 🎁
+                            </button>
+                            <button className="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all border-2 border-white">
+                                Gift Guide
+                            </button>
+                        </div>
+
+                        <ChevronDown size={32} className="mx-auto animate-bounce" />
+                    </section>
+
+                    {/* Featured Gifts */}
+                    <section id="gifts" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+                        <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
+                            Featured Gifts
+                        </h2>
+                        <p className="text-center text-red-100 mb-12 text-lg">
+                            Handpicked with care for this festive season
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {[
+                                { icon: Gift, title: "For Family", desc: "Thoughtful gifts that bring everyone together", color: "bg-red-700" },
+                                { icon: Heart, title: "For Loved Ones", desc: "Express your love with perfect presents", color: "bg-pink-700" },
+                                { icon: Star, title: "For Friends", desc: "Celebrate friendship with amazing gifts", color: "bg-green-700" }
+                            ].map((item, i) => (
+                                <div
+                                    key={i}
+                                    className="bg-white bg-opacity-10 backdrop-blur-md rounded-3xl p-8 hover:bg-opacity-20 transition-all transform hover:scale-105 cursor-pointer border border-white border-opacity-20"
+                                    style={{ animation: 'float 3s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}
+                                >
+                                    <div className={`${item.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6`}>
+                                        <item.icon size={32} />
+                                    </div>
+                                    <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
+                                    <p className="text-red-100">{item.desc}</p>
+                                    <button className="mt-6 text-yellow-300 font-semibold hover:underline">
+                                        Explore →
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Stats Section with Animated Counters */}
+                    <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-3xl p-12 text-red-900">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                                <div>
+                                    <AnimatedCounter end={10000} suffix="+" />
+                                    <div className="text-sm md:text-base font-semibold">Happy Customers</div>
+                                </div>
+                                <div>
+                                    <AnimatedCounter end={5000} suffix="+" />
+                                    <div className="text-sm md:text-base font-semibold">Gifts Delivered</div>
+                                </div>
+                                <div>
+                                    <AnimatedCounter end={99} suffix="%" />
+                                    <div className="text-sm md:text-base font-semibold">Satisfaction Rate</div>
+                                </div>
+                                <div>
+                                    <div className="text-4xl md:text-5xl font-bold mb-2">24/7</div>
+                                    <div className="text-sm md:text-base font-semibold">Support</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* CTA Section */}
+                    <section id="contact" className="relative z-10 max-w-4xl mx-auto px-6 py-20 text-center">
+                        <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-3xl p-12 border border-white border-opacity-20">
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                                Ready to Spread Joy?
+                            </h2>
+                            <p className="text-xl mb-8 text-red-100">
+                                Join thousands of happy gift-givers this holiday season
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="flex-1 px-6 py-4 rounded-full bg-white bg-opacity-20 backdrop-blur-sm border-2 border-white placeholder-red-200 focus:outline-none focus:border-yellow-300 text-white"
+                                />
+                                <button className="bg-yellow-400 text-red-900 px-8 py-4 rounded-full font-bold hover:bg-yellow-300 transition-all transform hover:scale-105">
+                                    Subscribe
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 text-center border-t border-white border-opacity-20 mt-20">
+                        <div className="flex items-center justify-center gap-2 mb-4 text-xl font-bold">
+                            <Gift size={24} className="text-yellow-300" />
+                            <span>Holiday Gifts</span>
+                        </div>
+                        <p className="text-red-200 mb-4">Making every Christmas special since 2020</p>
+                        <div className="flex justify-center gap-6 text-sm">
+                            <a href="#" className="hover:text-yellow-300 transition-colors">Privacy</a>
+                            <a href="#" className="hover:text-yellow-300 transition-colors">Terms</a>
+                            <a href="#" className="hover:text-yellow-300 transition-colors">Contact</a>
+                        </div>
+                        <p className="mt-8 text-sm text-red-300">© 2025 Holiday Gifts. All rights reserved By Ndinda. 🎄</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ChristmasLanding />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>
