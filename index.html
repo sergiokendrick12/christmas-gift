@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christmas Gift Landing Page</title>
+    <title>Sergio's Christmas 2024 🎄</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body>
     <div id="root"></div>
-
+    
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
@@ -56,6 +54,106 @@
             </svg>
         );
 
+        const Music = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+        );
+
+        const Play = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+        );
+
+        const Pause = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+        );
+
+        // Christmas Countdown Component
+        function ChristmasCountdown() {
+            const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+            useEffect(() => {
+                const calculateTimeLeft = () => {
+                    const christmas = new Date('2025-12-25T00:00:00');
+                    const now = new Date();
+                    const difference = christmas - now;
+
+                    if (difference > 0) {
+                        setTimeLeft({
+                            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                            minutes: Math.floor((difference / 1000 / 60) % 60),
+                            seconds: Math.floor((difference / 1000) % 60)
+                        });
+                    } else {
+                        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                    }
+                };
+
+                calculateTimeLeft();
+                const timer = setInterval(calculateTimeLeft, 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-3xl p-8 border border-white border-opacity-20">
+                    <h3 className="text-2xl font-bold mb-6 text-center">🎅 Countdown to Christmas 🎄</h3>
+                    <div className="grid grid-cols-4 gap-4">
+                        {[
+                            { value: timeLeft.days, label: 'Days' },
+                            { value: timeLeft.hours, label: 'Hours' },
+                            { value: timeLeft.minutes, label: 'Minutes' },
+                            { value: timeLeft.seconds, label: 'Seconds' }
+                        ].map((item, i) => (
+                            <div key={i} className="text-center">
+                                <div className="bg-red-700 rounded-2xl p-4 mb-2">
+                                    <div className="text-3xl md:text-4xl font-bold">{String(item.value).padStart(2, '0')}</div>
+                                </div>
+                                <div className="text-sm font-semibold">{item.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Music Player Component
+        function MusicPlayer() {
+            const [isPlaying, setIsPlaying] = useState(false);
+            const audioRef = useRef(null);
+
+            const togglePlay = () => {
+                if (isPlaying) {
+                    audioRef.current?.pause();
+                } else {
+                    audioRef.current?.play();
+                }
+                setIsPlaying(!isPlaying);
+            };
+
+            return (
+                <div className="fixed bottom-6 right-6 z-50">
+                    <button
+                        onClick={togglePlay}
+                        className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 flex items-center gap-2"
+                    >
+                        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        <Music size={24} />
+                    </button>
+                    <audio ref={audioRef} loop>
+                        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+                    </audio>
+                </div>
+            );
+        }
+
         // Animated Counter Component
         function AnimatedCounter({ end, duration = 2000, suffix = "" }) {
             const [count, setCount] = useState(0);
@@ -88,7 +186,7 @@
                 const animate = (currentTime) => {
                     if (!startTime) startTime = currentTime;
                     const progress = Math.min((currentTime - startTime) / duration, 1);
-
+                    
                     const easeOutQuart = 1 - Math.pow(1 - progress, 4);
                     setCount(Math.floor(easeOutQuart * end));
 
@@ -124,6 +222,9 @@
 
             return (
                 <div className="min-h-screen bg-gradient-to-b from-red-900 via-red-800 to-green-900 text-white overflow-hidden relative">
+                    {/* Music Player */}
+                    <MusicPlayer />
+
                     {/* Snowfall Effect */}
                     {snowflakes.map(flake => (
                         <div
@@ -159,12 +260,12 @@
                     <nav className="relative z-10 p-6 flex justify-between items-center max-w-7xl mx-auto">
                         <div className="flex items-center gap-2 text-2xl font-bold">
                             <Gift size={28} className="text-yellow-300" />
-                            <span>Holiday Gifts</span>
+                            <span>Sergio's Christmas</span>
                         </div>
                         <div className="hidden md:flex gap-8">
+                            <a href="#countdown" className="hover:text-yellow-300 transition-colors">Countdown</a>
                             <a href="#gifts" className="hover:text-yellow-300 transition-colors">Gifts</a>
-                            <a href="#about" className="hover:text-yellow-300 transition-colors">About</a>
-                            <a href="#contact" className="hover:text-yellow-300 transition-colors">Contact</a>
+                            <a href="#message" className="hover:text-yellow-300 transition-colors">Message</a>
                         </div>
                     </nav>
 
@@ -172,40 +273,64 @@
                     <section className="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center">
                         <div className="inline-flex items-center gap-2 bg-yellow-400 text-red-900 px-4 py-2 rounded-full text-sm font-semibold mb-8">
                             <Sparkles size={16} />
-                            Limited Time Holiday Offers
+                            Sergio's Holiday Special 2024
                         </div>
-
+                        
                         <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                            Make This Christmas
+                            Merry Christmas
                             <br />
                             <span className="text-yellow-300" style={{ animation: 'pulse 2s ease-in-out infinite' }}>
-                                Magical ✨
+                                From Sergio ✨
                             </span>
                         </h1>
-
+                        
                         <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-red-100">
-                            Discover the perfect gifts for everyone on your list. Wrapped with love, delivered with joy.
+                            Wishing you joy, love, and magical moments this festive season. May your holidays be filled with warmth and happiness! 🎄
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                             <button className="bg-yellow-400 text-red-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-lg">
-                                Shop Now 🎁
+                                Explore Gifts 🎁
                             </button>
                             <button className="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all border-2 border-white">
-                                Gift Guide
+                                See Countdown ⏰
                             </button>
                         </div>
 
                         <ChevronDown size={32} className="mx-auto animate-bounce" />
                     </section>
 
+                    {/* Countdown Section */}
+                    <section id="countdown" className="relative z-10 max-w-4xl mx-auto px-6 py-20">
+                        <ChristmasCountdown />
+                    </section>
+
+                    {/* Personal Message Section */}
+                    <section id="message" className="relative z-10 max-w-4xl mx-auto px-6 py-20">
+                        <div className="bg-gradient-to-br from-red-700 to-pink-700 rounded-3xl p-12 border-4 border-yellow-400 shadow-2xl">
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-center">
+                                🎄 A Special Message 🎄
+                            </h2>
+                            <p className="text-xl leading-relaxed text-center mb-6">
+                                This Christmas, I want to take a moment to spread joy and gratitude. 
+                                Whether we're near or far, the spirit of Christmas brings us all together.
+                            </p>
+                            <p className="text-lg leading-relaxed text-center italic text-yellow-200">
+                                "The best gift around the Christmas tree is the presence of family and friends wrapped in love." 
+                            </p>
+                            <p className="text-right mt-6 text-yellow-300 font-bold text-xl">
+                                - Sergio ❤️
+                            </p>
+                        </div>
+                    </section>
+
                     {/* Featured Gifts */}
                     <section id="gifts" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
                         <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-                            Featured Gifts
+                            Gift Ideas 🎁
                         </h2>
                         <p className="text-center text-red-100 mb-12 text-lg">
-                            Handpicked with care for this festive season
+                            Handpicked with love for this festive season
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -214,7 +339,7 @@
                                 { icon: Heart, title: "For Loved Ones", desc: "Express your love with perfect presents", color: "bg-pink-700" },
                                 { icon: Star, title: "For Friends", desc: "Celebrate friendship with amazing gifts", color: "bg-green-700" }
                             ].map((item, i) => (
-                                <div
+                                <div 
                                     key={i}
                                     className="bg-white bg-opacity-10 backdrop-blur-md rounded-3xl p-8 hover:bg-opacity-20 transition-all transform hover:scale-105 cursor-pointer border border-white border-opacity-20"
                                     style={{ animation: 'float 3s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}
@@ -235,45 +360,24 @@
                     {/* Stats Section with Animated Counters */}
                     <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
                         <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-3xl p-12 text-red-900">
+                            <h3 className="text-3xl font-bold text-center mb-8">This Holiday Season 🎉</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                                 <div>
-                                    <AnimatedCounter end={10000} suffix="+" />
-                                    <div className="text-sm md:text-base font-semibold">Happy Customers</div>
+                                    <AnimatedCounter end={1000} suffix="+" />
+                                    <div className="text-sm md:text-base font-semibold">Smiles Shared</div>
                                 </div>
                                 <div>
-                                    <AnimatedCounter end={5000} suffix="+" />
-                                    <div className="text-sm md:text-base font-semibold">Gifts Delivered</div>
+                                    <AnimatedCounter end={500} suffix="+" />
+                                    <div className="text-sm md:text-base font-semibold">Gifts Given</div>
                                 </div>
                                 <div>
-                                    <AnimatedCounter end={99} suffix="%" />
-                                    <div className="text-sm md:text-base font-semibold">Satisfaction Rate</div>
+                                    <AnimatedCounter end={100} suffix="%" />
+                                    <div className="text-sm md:text-base font-semibold">Love & Joy</div>
                                 </div>
                                 <div>
-                                    <div className="text-4xl md:text-5xl font-bold mb-2">24/7</div>
-                                    <div className="text-sm md:text-base font-semibold">Support</div>
+                                    <div className="text-4xl md:text-5xl font-bold mb-2">∞</div>
+                                    <div className="text-sm md:text-base font-semibold">Christmas Spirit</div>
                                 </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* CTA Section */}
-                    <section id="contact" className="relative z-10 max-w-4xl mx-auto px-6 py-20 text-center">
-                        <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-3xl p-12 border border-white border-opacity-20">
-                            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                                Ready to Spread Joy?
-                            </h2>
-                            <p className="text-xl mb-8 text-red-100">
-                                Join thousands of happy gift-givers this holiday season
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="flex-1 px-6 py-4 rounded-full bg-white bg-opacity-20 backdrop-blur-sm border-2 border-white placeholder-red-200 focus:outline-none focus:border-yellow-300 text-white"
-                                />
-                                <button className="bg-yellow-400 text-red-900 px-8 py-4 rounded-full font-bold hover:bg-yellow-300 transition-all transform hover:scale-105">
-                                    Subscribe
-                                </button>
                             </div>
                         </div>
                     </section>
@@ -282,15 +386,10 @@
                     <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 text-center border-t border-white border-opacity-20 mt-20">
                         <div className="flex items-center justify-center gap-2 mb-4 text-xl font-bold">
                             <Gift size={24} className="text-yellow-300" />
-                            <span>Holiday Gifts</span>
+                            <span>Sergio's Christmas 2024</span>
                         </div>
-                        <p className="text-red-200 mb-4">Making every Christmas special since 2020</p>
-                        <div className="flex justify-center gap-6 text-sm">
-                            <a href="#" className="hover:text-yellow-300 transition-colors">Privacy</a>
-                            <a href="#" className="hover:text-yellow-300 transition-colors">Terms</a>
-                            <a href="#" className="hover:text-yellow-300 transition-colors">Contact</a>
-                        </div>
-                        <p className="mt-8 text-sm text-red-300">© 2025 Holiday Gifts. All rights reserved By Ndinda. 🎄</p>
+                        <p className="text-red-200 mb-4">Spreading joy and Christmas cheer! 🎅✨</p>
+                        <p className="mt-8 text-sm text-red-300">Made with ❤️ by Sergio • Merry Christmas! 🎄</p>
                     </footer>
                 </div>
             );
@@ -299,5 +398,4 @@
         ReactDOM.render(<ChristmasLanding />, document.getElementById('root'));
     </script>
 </body>
-
 </html>
