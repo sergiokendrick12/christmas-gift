@@ -174,7 +174,9 @@
                 if (isPlaying) {
                     audioRef.current?.pause();
                 } else {
-                    audioRef.current?.play();
+                    audioRef.current?.play().catch(err => {
+                        console.log("Autoplay prevented. Click again!");
+                    });
                 }
                 setIsPlaying(!isPlaying);
             };
@@ -184,12 +186,13 @@
                     <button
                         onClick={togglePlay}
                         className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 flex items-center gap-2"
+                        title={isPlaying ? "Pause Music" : "Play Christmas Music"}
                     >
                         {isPlaying ? <Pause size={24} /> : <Play size={24} />}
                         <Music size={24} />
                     </button>
                     <audio ref={audioRef} loop>
-                        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+                        <source src="https://cdn.pixabay.com/download/audio/2021/11/23/audio_4fe888ed82.mp3" type="audio/mpeg" />
                     </audio>
                 </div>
             );
@@ -547,9 +550,12 @@
                             >
                                 Play Game 🎮
                             </button>
-                            <button className="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all border-2 border-white">
+                            <a 
+                                href="#gifts"
+                                className="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-4 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all border-2 border-white text-center"
+                            >
                                 Explore ⬇️
-                            </button>
+                            </a>
                         </div>
 
                         <ChevronDown size={32} className="mx-auto animate-bounce" />
@@ -668,13 +674,13 @@
                             <h2 className="text-4xl font-bold mb-6">Connect With Me! 🌟</h2>
                             <p className="text-lg mb-8">Follow me on social media for more Christmas updates!</p>
                             <div className="flex justify-center gap-6">
-                                <a href="#" className="bg-pink-600 hover:bg-pink-700 p-4 rounded-full transition-all transform hover:scale-110">
+                                <a href="https://instagram.com/sergiokendrick12" target="_blank" rel="noopener noreferrer" className="bg-pink-600 hover:bg-pink-700 p-4 rounded-full transition-all transform hover:scale-110">
                                     <Instagram size={32} />
                                 </a>
-                                <a href="#" className="bg-blue-500 hover:bg-blue-600 p-4 rounded-full transition-all transform hover:scale-110">
+                                <a href="https://twitter.com/sergiokendrick12" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 p-4 rounded-full transition-all transform hover:scale-110">
                                     <Twitter size={32} />
                                 </a>
-                                <a href="#" className="bg-blue-700 hover:bg-blue-800 p-4 rounded-full transition-all transform hover:scale-110">
+                                <a href="https://facebook.com/sergiokendrick12" target="_blank" rel="noopener noreferrer" className="bg-blue-700 hover:bg-blue-800 p-4 rounded-full transition-all transform hover:scale-110">
                                     <Facebook size={32} />
                                 </a>
                             </div>
